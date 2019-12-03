@@ -5,6 +5,7 @@ import { FMSynth, Frequency, Time } from 'tone/tone'
 // Roadmap
 // Fix styling, make it an actual keyboard
 // Adjust Synth options to sound more like a piano
+// Middle C is the 1st note of 4th Octave, mark it accordingly
 
 const NormalPiano = {
   harmonicity: 8,
@@ -19,13 +20,11 @@ export function Piano() {
   const keyboard = [...Array(88).keys()]
 
   const playNote = (midi: number) => () => {
-    // const synth = new Tone.Synth({ oscillator: { type: 'sine' } })
-    const synth = new FMSynth(NormalPiano)
-    synth.toMaster()
-
-    // Play Middle C
     const note = Frequency.mtof(midi)
     const duration = new Time(2).toNotation()
+    const synth = new FMSynth(NormalPiano)
+
+    synth.toMaster()
     synth.triggerAttackRelease(note, duration)
   }
 
@@ -42,8 +41,6 @@ export function Piano() {
 
   return (
     <View>
-      <Text>Piano - TODO Fix the styling</Text>
-
       {keyboard.map((i) => (
         <Button key={`note-${i}`} title={getLabel(i)} onPress={playNote(i)} />
       ))}

@@ -5,12 +5,12 @@ import { View, Text } from 'react-native'
 // Tempo - bpm
 // Resolution - 1/4, 1/8, 1/16
 // Change note
+// Implement using an oscillator
 
 export function Metronome() {
   return (
     <View>
       <Text>Metronome - TODO</Text>
-      <Text>Probably implement an oscillator here</Text>
     </View>
   )
 }
