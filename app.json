@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Musician's Toolbox",
-    "slug": "musicians-toolbox",
+    "name": "Musicbox",
+    "slug": "musicbox",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": ["ios", "android", "web"],
