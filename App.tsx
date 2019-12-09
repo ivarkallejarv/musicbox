@@ -1,8 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { Piano } from './src/components/Piano/Piano'
-import { Metronome } from './src/components/Metronome/Metronome'
-import { Tuner } from './src/components/Tuner/Tuner'
 
 // Roadmap
 // Split into views and think up an actual UI
@@ -10,8 +8,8 @@ import { Tuner } from './src/components/Tuner/Tuner'
 export default function App() {
   return (
     <View style={styles.container}>
-      <Tuner />
-      <Metronome />
+      {/* <Tuner /> */}
+      {/* <Metronome /> */}
       <Piano />
     </View>
   )

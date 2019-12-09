@@ -8,16 +8,16 @@
   },
   "dependencies": {
     "expo": "^35.0.0",
-    "react": "16.8.3",
-    "react-dom": "16.8.3",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-native": "^0.61.5",
     "react-native-web": "^0.11.7",
     "tone": "^13.8.31",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@types/react": "^16.8.23",
-    "@types/react-native": "^0.57.65",
+    "@types/react-native": "^0.60.24",
     "babel-preset-expo": "^7.1.0",
     "typescript": "^3.6.3"
   }
