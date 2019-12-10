@@ -1,5 +1,4 @@
 import React from 'react'
-import { View, Text } from 'react-native'
 
 // Roadmap
 // Collect useful exercises
@@ -7,12 +6,12 @@ import { View, Text } from 'react-native'
 
 export function Exercises() {
   return (
-    <View>
-      <Text>Exercises - TODO</Text>
-      <Text>Open throat - A,E,I,O,U</Text>
-      <Text>Pronounce Louie/Louis for an exercise/</Text>
-      <Text>Try to combine above 2</Text>
-      <Text>Breathing exercise - (sss, fff) (low, medium, high) blowing air, alternating between modes</Text>
-    </View>
+    <div>
+      <p>Exercises - TODO</p>
+      <p>Open throat - A,E,I,O,U</p>
+      <p>Pronounce Louie/Louis for an exercise/</p>
+      <p>Try to combine above 2</p>
+      <p>Breathing exercise - (sss, fff) (low, medium, high) blowing air, alternating between modes</p>
+    </div>
   )
 }

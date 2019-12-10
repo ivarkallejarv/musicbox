@@ -1,5 +1,4 @@
 import React from 'react'
-import { View, Text } from 'react-native'
 
 // Roadmap
 // Tempo - bpm
@@ -9,8 +8,8 @@ import { View, Text } from 'react-native'
 
 export function Metronome() {
   return (
-    <View>
-      <Text>Metronome - TODO</Text>
-    </View>
+    <div>
+      <p>Metronome - TODO</p>
+    </div>
   )
 }

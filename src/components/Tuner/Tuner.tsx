@@ -1,5 +1,4 @@
 import React from 'react'
-import { View, Text } from 'react-native'
 
 // Roadmap
 // Detect sound (Note being sung)
@@ -9,8 +8,8 @@ import { View, Text } from 'react-native'
 
 export function Tuner() {
   return (
-    <View>
-      <Text>Tuner - TODO</Text>
-    </View>
+    <div>
+      <p>Tuner - TODO</p>
+    </div>
   )
 }

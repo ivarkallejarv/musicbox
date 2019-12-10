@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
-import { FMSynth, Frequency, Time } from 'tone/tone'
+import { FMSynth, Frequency, Time } from 'tone/Tone'
 import { Notation, OctaveNotes, OctaveZeroNotes, SynthOptions } from '../../enums'
+
+import './Piano.scss'
 
 function PianoReducer() {
   const [octave, setOctave] = useState(4)
@@ -45,82 +46,28 @@ export function Piano() {
   const { octave, notes, changeOctave, playNote } = PianoReducer()
 
   return (
-    <View>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.navigationButton}
-          disabled={octave === 0}
-          onPress={() => changeOctave('decrement')}
-        >
-          <Text>Lower</Text>
-        </TouchableOpacity>
+    <div className="piano">
+      <div className="piano__controls">
+        <button disabled={octave === 0} onClick={() => changeOctave('decrement')}>
+          Lower
+        </button>
 
-        <Text>Current Octave: {octave}</Text>
+        <p>Current Octave: {octave}</p>
 
-        <TouchableOpacity
-          style={styles.navigationButton}
-          disabled={octave === 8}
-          onPress={() => changeOctave('increment')}
-        >
-          <Text>Higher</Text>
-        </TouchableOpacity>
-      </View>
+        <button disabled={octave === 8} onClick={() => changeOctave('increment')}>
+          Higher
+        </button>
+      </div>
 
-      <View style={styles.piano}>
+      <div className="piano__keys">
         {notes.map((i) => (
-          <TouchableOpacity
+          <button
             key={`note-${i}`}
-            style={i.length === 1 ? styles.whiteKey : styles.blackKey}
-            onPress={() => playNote(i)}
-          >
-            <Text />
-          </TouchableOpacity>
+            className={i.length === 1 ? 'piano__white-key' : 'piano__black-key'}
+            onClick={() => playNote(i)}
+          />
         ))}
-      </View>
-    </View>
+      </div>
+    </div>
   )
 }
-
-const styles = StyleSheet.create({
-  header: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  navigationButton: {
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingLeft: 16,
-    paddingRight: 16,
-    textAlign: 'center',
-    boxShadow: '-1px 0 0 rgba(255,255,255,0.8) inset,0 0 5px #ccc inset,0 0 3px rgba(0,0,0,0.2)',
-  },
-  piano: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  whiteKey: {
-    height: '16em',
-    width: '4em',
-    zIndex: 1,
-    borderLeft: '1px solid #bbb',
-    borderBottom: '1px solid #bbb',
-    borderRadius: 5,
-    backgroundColor: '#fff',
-    boxShadow: '-1px 0 0 rgba(255,255,255,0.8) inset,0 0 5px #ccc inset,0 0 3px rgba(0,0,0,0.2)',
-  },
-  blackKey: {
-    position: 'relative',
-    height: '8em',
-    width: '2em',
-    marginLeft: '-1rem',
-    marginRight: '-1rem',
-    zIndex: 2,
-    border: '1px solid #000',
-    borderRadius: 3,
-    backgroundColor: '#000',
-    boxShadow:
-      '-1px -1px 2px rgba(255,255,255,0.2) inset,0 -5px 2px 3px rgba(0,0,0,0.6) inset,0 2px 4px rgba(0,0,0,0.5)',
-  },
-})

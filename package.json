@@ -30,7 +30,7 @@
   },
   "lint-staged": {
     "*.{ts, tsx}": "eslint --fix",
-    "*": "prettier --write"
+    "*.{ts, tsx, scss, json, md, html}": "prettier --write"
   },
   "eslintConfig": {
     "extends": "react-app"
