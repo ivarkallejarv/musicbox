@@ -24,17 +24,13 @@
     "typescript": "~3.7.2"
   },
   "husky": {
-    "pre-commit": "lint-staged"
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
-    "*.{ts, tsx}": [
-      "eslint --fix",
-      "git add"
-    ],
-    "*": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.{ts, tsx}": "eslint --fix",
+    "*": "prettier --write"
   },
   "eslintConfig": {
     "extends": "react-app"
