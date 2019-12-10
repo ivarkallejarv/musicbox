@@ -1,24 +1,54 @@
 {
+  "name": "musicbox",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "eject": "expo eject"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
-    "expo": "^35.0.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "husky": "^3.1.0",
+    "lint-staged": "^10.0.0-beta.7",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-native": "^0.61.5",
-    "react-native-web": "^0.11.7",
-    "tone": "^13.8.31",
-    "tslib": "^1.10.0"
+    "react-scripts": "3.3.0",
+    "typescript": "~3.7.2"
   },
-  "devDependencies": {
-    "@types/react": "^16.8.23",
-    "@types/react-native": "^0.60.24",
-    "babel-preset-expo": "^7.1.0",
-    "typescript": "^3.6.3"
+  "husky": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts, tsx}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
