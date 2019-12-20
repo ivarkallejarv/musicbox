@@ -1,10 +1,8 @@
-const { override } = require('customize-cra')
+const { override, addWebpackModuleRule } = require('customize-cra')
 
-module.exports = override((config) => {
-  config.module.rules.push({
+module.exports = override(
+  addWebpackModuleRule({
     test: /\.worker\.js$/,
     use: { loader: 'worker-loader' },
-  })
-
-  return config
-})
+  }),
+)
