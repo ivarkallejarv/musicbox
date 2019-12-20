@@ -1,7 +1,7 @@
 import React from 'react'
-import { Piano } from './Components/Piano/Piano'
-import { Tuner } from './Components/Tuner/Tuner'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
+import { Tuner } from './Components/Tuner/Tuner'
+import { Piano } from './Components/Piano/Piano'
 
 import './App.scss'
 
