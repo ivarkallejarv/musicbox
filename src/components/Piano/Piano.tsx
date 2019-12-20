@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { FMSynth, Frequency, Time } from 'tone/Tone'
-import { Notation, OctaveNotes, OctaveZeroNotes, SynthOptions } from '../../enums'
+import { OctaveNotes, OctaveZeroNotes } from './Notation'
+import PianoPreset from './PianoPreset'
+import 'webaudiofont'
 
 import './Piano.scss'
 
@@ -8,11 +9,11 @@ function PianoReducer() {
   const [octave, setOctave] = useState(4)
   const notes = octave === 0 ? OctaveZeroNotes : OctaveNotes
 
-  // Alternative piano sound
-  // const synth = new Tone.Synth();
-  // synth.oscillator.type = "sine";
-  const synth = new FMSynth(SynthOptions)
-  synth.toMaster()
+  const AudioContext = window.AudioContext
+  const audioContext = new AudioContext()
+
+  const player = new window.WebAudioFontPlayer()
+  player.adjustPreset(audioContext, PianoPreset)
 
   function changeOctave(action: 'increment' | 'decrement') {
     if ((action === 'increment' && octave === 8) || (action === 'decrement' && octave === 0)) {
@@ -22,16 +23,11 @@ function PianoReducer() {
     setOctave(octave + change)
   }
 
-  function playNote(note: Notation) {
-    const leftOver = 3 + (octave - 1) * OctaveNotes.length
-    const midi = octave === 0 ? OctaveZeroNotes.indexOf(note) : OctaveNotes.indexOf(note) + leftOver
+  function playNote(note: number) {
+    const pitch = note - 1 + 12 * octave
+    const { destination, currentTime } = audioContext
 
-    const tone = Frequency.mtof(midi)
-    const duration = new Time(2).toNotation()
-
-    // Can separate to triggerAttack on mouseDown
-    // And triggerRelease on mouseUp
-    synth.triggerAttackRelease(tone, duration)
+    player.queueWaveTable(audioContext, destination, PianoPreset, currentTime, pitch, 4)
   }
 
   return { octave, notes, changeOctave, playNote }
@@ -60,11 +56,11 @@ export function Piano() {
       </div>
 
       <div className="piano__keys">
-        {notes.map((i) => (
+        {notes.map((i, index) => (
           <button
             key={`note-${i}`}
             className={i.length === 1 ? 'piano__white-key' : 'piano__black-key'}
-            onClick={() => playNote(i)}
+            onClick={() => playNote(index)}
           />
         ))}
       </div>
