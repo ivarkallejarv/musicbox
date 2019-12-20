@@ -58,6 +58,7 @@ export function Piano() {
       <div className="piano__keys">
         {notes.map((i, index) => (
           <button
+            aria-label={`Piano key ${i}`}
             key={`note-${i}`}
             className={i.length === 1 ? 'piano__white-key' : 'piano__black-key'}
             onClick={() => playNote(index)}

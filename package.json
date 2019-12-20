@@ -16,11 +16,16 @@
     "@types/node": "^12.12.17",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/react-router-dom": "^5.1.3",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
     "husky": "^3.1.0",
     "lint-staged": "^10.0.0-beta.7",
     "node-sass": "^4.13.0",
     "react": "^16.12.0",
+    "react-axe": "^3.3.0",
     "react-dom": "^16.12.0",
+    "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.0",
     "typescript": "~3.7.2",
     "webaudiofont": "^2.5.48"
@@ -35,7 +40,11 @@
     "*.{ts, tsx, scss, json, md, html}": "prettier --write"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "plugin:jsx-a11y/recommended",
+      "prettier"
+    ]
   },
   "browserslist": {
     "production": [

@@ -1,9 +1,16 @@
+import './gfx/main.scss' // make sure css is loaded before any component
+
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './App'
+import { App } from './App'
 
 import './index.scss'
 import * as serviceWorker from './serviceWorker'
+
+if (process.env.NODE_ENV !== 'production') {
+  const axe = require('react-axe')
+  axe(React, ReactDOM, 1000)
+}
 
 ReactDOM.render(<App />, document.getElementById('root'))
 
