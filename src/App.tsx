@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { Tuner } from './Components/Tuner/Tuner'
-import { Piano } from './Components/Piano/Piano'
 
 import './App.scss'
+
+const Tuner = lazy(() => import('./Components/Tuner/Tuner'))
+const Piano = lazy(() => import('./Components/Piano/Piano'))
 
 export const Routes = {
   Piano: '/',
@@ -22,11 +23,13 @@ export const App: React.FC = () => (
 
     <h1 className="title">Musicbox</h1>
 
-    <Router>
-      <Switch>
-        <Route path={Routes.Tuner} component={Tuner} />
-        <Route path={Routes.Piano} component={Piano} />
-      </Switch>
-    </Router>
+    <Suspense fallback={null}>
+      <Router>
+        <Switch>
+          <Route path={Routes.Tuner} component={Tuner} />
+          <Route path={Routes.Piano} component={Piano} />
+        </Switch>
+      </Router>
+    </Suspense>
   </main>
 )
