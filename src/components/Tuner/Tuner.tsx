@@ -87,7 +87,7 @@ function TunerReducer() {
   }
 }
 
-export function Tuner() {
+export default function Tuner() {
   TunerReducer()
 
   return (

@@ -38,7 +38,7 @@ function PianoReducer() {
 // Adjust Synth options to sound more like a piano
 // Middle C is the 1st note of 4th Octave, mark it accordingly
 
-export function Piano() {
+export default function Piano() {
   const { octave, notes, changeOctave, playNote } = PianoReducer()
 
   return (
