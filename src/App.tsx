@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 import './App.scss'
 
-const Tuner = lazy(() => import('./Components/Tuner/Tuner'))
-const Piano = lazy(() => import('./Components/Piano/Piano'))
+const Tuner = lazy(() => import('./components/Tuner/Tuner'))
+const Piano = lazy(() => import('./components/Piano/Piano'))
 
 export const Routes = {
   Piano: '/',
