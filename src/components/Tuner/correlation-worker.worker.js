@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 self.onmessage = ({ data }) => {
   const { timeseries, testFrequencies, sampleRate } = data
   const frequencyAmplitudes = computeCorrelations(timeseries, testFrequencies, sampleRate)
