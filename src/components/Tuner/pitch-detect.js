@@ -11,7 +11,7 @@ window.onload = () => {
   request.open('GET', '../sounds/whistling3.ogg', true)
   request.responseType = 'arraybuffer'
   request.onload = () => {
-    audioContext.decodeAudioData(request.response, () => {}).catch((e) => console.log(e))
+    audioContext.decodeAudioData(request.response, () => {})
   }
   request.send()
 
@@ -35,15 +35,13 @@ window.onload = () => {
 
     const reader = new FileReader()
     reader.onload = (event) => {
-      audioContext
-        .decodeAudioData(
-          event.target.result,
-          () => {},
-          () => {
-            alert('error loading!')
-          },
-        )
-        .catch((e) => console.log(e))
+      audioContext.decodeAudioData(
+        event.target.result,
+        () => {},
+        () => {
+          alert('error loading!')
+        },
+      )
     }
     reader.onerror = () => {
       alert('Error: ' + reader.error)
@@ -75,14 +73,12 @@ function gotStream(stream) {
 }
 
 export function toggleLiveInput() {
+  audioContext.resume()
   if (isPlaying) {
     sourceNode.stop(0)
     sourceNode = null
     analyser = null
     isPlaying = false
-    if (!window.cancelAnimationFrame) {
-      window.cancelAnimationFrame = window.webkitCancelAnimationFrame
-    }
     window.cancelAnimationFrame(rafID)
   }
   getUserMedia(
@@ -102,7 +98,7 @@ export function toggleLiveInput() {
 }
 
 let rafID = null
-let buflen = 1024
+let buflen = 2048
 let buf = new Float32Array(buflen)
 
 let noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -120,17 +116,10 @@ function centsOffFromPitch(frequency, note) {
   return Math.floor((1200 * Math.log(frequency / frequencyFromNoteNumber(note))) / Math.log(2))
 }
 
-let MIN_SAMPLES = 0
-let GOOD_ENOUGH_CORRELATION = 0.9
-
 function autoCorrelate(buf, sampleRate) {
+  // Implements the ACF2+ algorithm
   let SIZE = buf.length
-  let MAX_SAMPLES = Math.floor(SIZE / 2)
-  let best_offset = -1
-  let best_correlation = 0
   let rms = 0
-  let foundGoodCorrelation = false
-  let correlations = new Array(MAX_SAMPLES)
 
   for (let i = 0; i < SIZE; i++) {
     let val = buf[i]
@@ -139,31 +128,46 @@ function autoCorrelate(buf, sampleRate) {
   rms = Math.sqrt(rms / SIZE)
   if (rms < 0.01) return -1
 
-  let lastCorrelation = 1
-  for (let offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
-    let correlation = 0
+  let r1 = 0
+  let r2 = SIZE - 1
+  let threshold = 0.2
+  for (let i = 0; i < SIZE / 2; i++)
+    if (Math.abs(buf[i]) < threshold) {
+      r1 = i
+      break
+    }
+  for (let i = 1; i < SIZE / 2; i++)
+    if (Math.abs(buf[SIZE - i]) < threshold) {
+      r2 = SIZE - i
+      break
+    }
 
-    for (let i = 0; i < MAX_SAMPLES; i++) {
-      correlation += Math.abs(buf[i] - buf[i + offset])
+  buf = buf.slice(r1, r2)
+  SIZE = buf.length
+
+  let c = new Array(SIZE).fill(0)
+  for (let i = 0; i < SIZE; i++) for (let j = 0; j < SIZE - i; j++) c[i] = c[i] + buf[j] * buf[j + i]
+
+  let d = 0
+  while (c[d] > c[d + 1]) d++
+  let maxval = -1
+  let maxpos = -1
+  for (let i = d; i < SIZE; i++) {
+    if (c[i] > maxval) {
+      maxval = c[i]
+      maxpos = i
     }
-    correlation = 1 - correlation / MAX_SAMPLES
-    correlations[offset] = correlation // store it, for the tweaking we need to do below.
-    if (correlation > GOOD_ENOUGH_CORRELATION && correlation > lastCorrelation) {
-      foundGoodCorrelation = true
-      if (correlation > best_correlation) {
-        best_correlation = correlation
-        best_offset = offset
-      }
-    } else if (foundGoodCorrelation) {
-      let shift = (correlations[best_offset + 1] - correlations[best_offset - 1]) / correlations[best_offset]
-      return sampleRate / (best_offset + 8 * shift)
-    }
-    lastCorrelation = correlation
   }
-  if (best_correlation > 0.01) {
-    return sampleRate / best_offset
-  }
-  return -1
+  let T0 = maxpos
+
+  let x1 = c[T0 - 1]
+  let x2 = c[T0]
+  let x3 = c[T0 + 1]
+  let a = (x1 + x3 - 2 * x2) / 2
+  let b = (x3 - x1) / 2
+  if (a) T0 = T0 - b / (2 * a)
+
+  return sampleRate / T0
 }
 
 function updatePitch() {
@@ -194,8 +198,5 @@ function updatePitch() {
     }
   }
 
-  if (!window.requestAnimationFrame) {
-    window.requestAnimationFrame = window.webkitRequestAnimationFrame
-  }
   rafID = window.requestAnimationFrame(updatePitch)
 }
