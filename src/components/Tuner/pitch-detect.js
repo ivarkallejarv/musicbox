@@ -1,5 +1,3 @@
-window.AudioContext = window.AudioContext || window.webkitAudioContext
-
 let audioContext = null
 let isPlaying = false
 let sourceNode = null
@@ -7,7 +5,7 @@ let analyser = null
 let mediaStreamSource = null
 let detectorElem, pitchElem, noteElem, detuneElem, detuneAmount
 
-window.onload = function() {
+window.onload = () => {
   audioContext = new AudioContext()
   const request = new XMLHttpRequest()
   request.open('GET', '../sounds/whistling3.ogg', true)
@@ -61,7 +59,6 @@ function error() {
 
 function getUserMedia(dictionary, callback) {
   try {
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
     navigator.getUserMedia(dictionary, callback, error)
   } catch (e) {
     alert('getUserMedia threw exception :' + e)
@@ -69,10 +66,8 @@ function getUserMedia(dictionary, callback) {
 }
 
 function gotStream(stream) {
-  // Create an AudioNode from the stream.
   mediaStreamSource = audioContext.createMediaStreamSource(stream)
 
-  // Connect it to the destination.
   analyser = audioContext.createAnalyser()
   analyser.fftSize = 2048
   mediaStreamSource.connect(analyser)
@@ -81,7 +76,6 @@ function gotStream(stream) {
 
 export function toggleLiveInput() {
   if (isPlaying) {
-    //stop playing and return
     sourceNode.stop(0)
     sourceNode = null
     analyser = null
@@ -126,44 +120,8 @@ function centsOffFromPitch(frequency, note) {
   return Math.floor((1200 * Math.log(frequency / frequencyFromNoteNumber(note))) / Math.log(2))
 }
 
-// this is a float version of the algorithm below - but it's not currently used.
-/*
-function autoCorrelateFloat( buf, sampleRate ) {
-	var MIN_SAMPLES = 4;	// corresponds to an 11kHz signal
-	var MAX_SAMPLES = 1000; // corresponds to a 44Hz signal
-	var SIZE = 1000;
-	var best_offset = -1;
-	var best_correlation = 0;
-	var rms = 0;
-
-	if (buf.length < (SIZE + MAX_SAMPLES - MIN_SAMPLES))
-		return -1;  // Not enough data
-
-	for (var i=0;i<SIZE;i++)
-		rms += buf[i]*buf[i];
-	rms = Math.sqrt(rms/SIZE);
-
-	for (var offset = MIN_SAMPLES; offset <= MAX_SAMPLES; offset++) {
-		var correlation = 0;
-
-		for (var i=0; i<SIZE; i++) {
-			correlation += Math.abs(buf[i]-buf[i+offset]);
-		}
-		correlation = 1 - (correlation/SIZE);
-		if (correlation > best_correlation) {
-			best_correlation = correlation;
-			best_offset = offset;
-		}
-	}
-	if ((rms>0.1)&&(best_correlation > 0.1)) {
-		console.log("f = " + sampleRate/best_offset + "Hz (rms: " + rms + " confidence: " + best_correlation + ")");
-	}
-//	var best_frequency = sampleRate/best_offset;
-}
-*/
-
-let MIN_SAMPLES = 0 // will be initialized when AudioContext is created.
-let GOOD_ENOUGH_CORRELATION = 0.9 // this is the "bar" for how close a correlation needs to be
+let MIN_SAMPLES = 0
+let GOOD_ENOUGH_CORRELATION = 0.9
 
 function autoCorrelate(buf, sampleRate) {
   let SIZE = buf.length
@@ -179,9 +137,7 @@ function autoCorrelate(buf, sampleRate) {
     rms += val * val
   }
   rms = Math.sqrt(rms / SIZE)
-  if (rms < 0.01)
-    // not enough signal
-    return -1
+  if (rms < 0.01) return -1
 
   let lastCorrelation = 1
   for (let offset = MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
@@ -199,26 +155,15 @@ function autoCorrelate(buf, sampleRate) {
         best_offset = offset
       }
     } else if (foundGoodCorrelation) {
-      // short-circuit - we found a good correlation, then a bad one, so we'd just be seeing copies from here.
-      // Now we need to tweak the offset - by interpolating between the values to the left and right of the
-      // best offset, and shifting it a bit.  This is complex, and HACKY in this code (happy to take PRs!) -
-      // we need to do a curve fit on correlations[] around best_offset in order to better determine precise
-      // (anti-aliased) offset.
-
-      // we know best_offset >=1,
-      // since foundGoodCorrelation cannot go to true until the second pass (offset=1), and
-      // we can't drop into this clause until the following pass (else if).
       let shift = (correlations[best_offset + 1] - correlations[best_offset - 1]) / correlations[best_offset]
       return sampleRate / (best_offset + 8 * shift)
     }
     lastCorrelation = correlation
   }
   if (best_correlation > 0.01) {
-    // console.log("f = " + sampleRate/best_offset + "Hz (rms: " + rms + " confidence: " + best_correlation + ")")
     return sampleRate / best_offset
   }
   return -1
-  //	var best_frequency = sampleRate/best_offset;
 }
 
 function updatePitch() {
@@ -249,6 +194,8 @@ function updatePitch() {
     }
   }
 
-  if (!window.requestAnimationFrame) window.requestAnimationFrame = window.webkitRequestAnimationFrame
+  if (!window.requestAnimationFrame) {
+    window.requestAnimationFrame = window.webkitRequestAnimationFrame
+  }
   rafID = window.requestAnimationFrame(updatePitch)
 }
