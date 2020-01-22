@@ -73,7 +73,6 @@ function gotStream(stream) {
 }
 
 export function toggleLiveInput() {
-  audioContext.resume()
   if (isPlaying) {
     sourceNode.stop(0)
     sourceNode = null
