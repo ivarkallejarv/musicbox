@@ -8,6 +8,7 @@ export default function Tuner() {
 
   return (
     <div>
+      <button onClick={toggleLiveInput}>Click me</button>
       <div id="detector" className="vague">
         <div className="pitch">
           <span id="pitch">--</span>Hz
