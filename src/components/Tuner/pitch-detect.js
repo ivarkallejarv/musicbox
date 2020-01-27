@@ -7,69 +7,12 @@ let detectorElem, pitchElem, noteElem, detuneElem, detuneAmount
 
 window.onload = () => {
   audioContext = new AudioContext()
-  const request = new XMLHttpRequest()
-  request.open('GET', '../sounds/whistling3.ogg', true)
-  request.responseType = 'arraybuffer'
-  request.onload = () => {
-    audioContext.decodeAudioData(request.response, () => {})
-  }
-  request.send()
 
   detectorElem = document.getElementById('detector')
   pitchElem = document.getElementById('pitch')
   noteElem = document.getElementById('note')
   detuneElem = document.getElementById('detune')
   detuneAmount = document.getElementById('detune_amt')
-
-  detectorElem.ondragenter = () => {
-    this.classList.add('droptarget')
-    return false
-  }
-  detectorElem.ondragleave = () => {
-    this.classList.remove('droptarget')
-    return false
-  }
-  detectorElem.ondrop = (e) => {
-    this.classList.remove('droptarget')
-    e.preventDefault()
-
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      audioContext.decodeAudioData(
-        event.target.result,
-        () => {},
-        () => {
-          alert('error loading!')
-        },
-      )
-    }
-    reader.onerror = () => {
-      alert('Error: ' + reader.error)
-    }
-    reader.readAsArrayBuffer(e.dataTransfer.files[0])
-    return false
-  }
-}
-
-function error() {
-  alert('Stream generation failed.')
-}
-
-function getUserMedia(dictionary, callback) {
-  try {
-    navigator.getUserMedia(dictionary, callback, error)
-  } catch (e) {
-    alert('getUserMedia threw exception :' + e)
-  }
-}
-
-function gotStream(stream) {
-  mediaStreamSource = audioContext.createMediaStreamSource(stream)
-
-  analyser = audioContext.createAnalyser()
-  analyser.fftSize = 2048
-  mediaStreamSource.connect(analyser)
-  updatePitch()
 }
 
 export function toggleLiveInput() {
@@ -80,27 +23,28 @@ export function toggleLiveInput() {
     isPlaying = false
     window.cancelAnimationFrame(rafID)
   }
-  getUserMedia(
-    {
-      audio: {
-        mandatory: {
-          googEchoCancellation: 'false',
-          googAutoGainControl: 'false',
-          googNoiseSuppression: 'false',
-          googHighpassFilter: 'false',
-        },
-        optional: [],
+  try {
+    navigator.getUserMedia(
+      { audio: { echoCancellation: false, autoGainControl: false, noiseSuppression: false } },
+      (stream) => {
+        mediaStreamSource = audioContext && audioContext.createMediaStreamSource(stream)
+        analyser = audioContext && audioContext.createAnalyser()
+        analyser && (analyser.fftSize = 2048)
+        mediaStreamSource && mediaStreamSource.connect(analyser)
+        updatePitch()
       },
-    },
-    gotStream,
-  )
+      (e) => console.log('Error: ', e),
+    )
+  } catch (e) {
+    console.log(`getUserMedia threw exception : ${e}`)
+  }
 }
 
 let rafID = null
-let buflen = 2048
-let buf = new Float32Array(buflen)
+const buflen = 2048
+const buf = new Float32Array(buflen)
 
-let noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const noteStrings = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 function noteFromPitch(frequency) {
   const noteNum = 12 * (Math.log(frequency / 440) / Math.log(2))
@@ -125,7 +69,9 @@ function autoCorrelate(buf, sampleRate) {
     rms += val * val
   }
   rms = Math.sqrt(rms / SIZE)
-  if (rms < 0.01) return -1
+  if (rms < 0.01) {
+    return -1
+  }
 
   let r1 = 0
   let r2 = SIZE - 1
@@ -145,10 +91,16 @@ function autoCorrelate(buf, sampleRate) {
   SIZE = buf.length
 
   let c = new Array(SIZE).fill(0)
-  for (let i = 0; i < SIZE; i++) for (let j = 0; j < SIZE - i; j++) c[i] = c[i] + buf[j] * buf[j + i]
+  for (let i = 0; i < SIZE; i++) {
+    for (let j = 0; j < SIZE - i; j++) {
+      c[i] = c[i] + buf[j] * buf[j + i]
+    }
+  }
 
   let d = 0
-  while (c[d] > c[d + 1]) d++
+  while (c[d] > c[d + 1]) {
+    d++
+  }
   let maxval = -1
   let maxpos = -1
   for (let i = d; i < SIZE; i++) {
@@ -164,14 +116,16 @@ function autoCorrelate(buf, sampleRate) {
   let x3 = c[T0 + 1]
   let a = (x1 + x3 - 2 * x2) / 2
   let b = (x3 - x1) / 2
-  if (a) T0 = T0 - b / (2 * a)
+  if (a) {
+    T0 = T0 - b / (2 * a)
+  }
 
   return sampleRate / T0
 }
 
 function updatePitch() {
   analyser.getFloatTimeDomainData(buf)
-  let ac = autoCorrelate(buf, audioContext.sampleRate)
+  const ac = autoCorrelate(buf, audioContext.sampleRate)
   let pitch
 
   if (ac === -1) {
@@ -184,15 +138,14 @@ function updatePitch() {
     detectorElem.className = 'confident'
     pitch = ac
     pitchElem.innerText = Math.round(pitch)
-    let note = noteFromPitch(pitch)
+    const note = noteFromPitch(pitch)
     noteElem.innerHTML = noteStrings[note % 12]
-    let detune = centsOffFromPitch(pitch, note)
+    const detune = centsOffFromPitch(pitch, note)
     if (detune === 0) {
       detuneElem.className = ''
       detuneAmount.innerHTML = '--'
     } else {
-      if (detune < 0) detuneElem.className = 'flat'
-      else detuneElem.className = 'sharp'
+      detuneElem.className = detune < 0 ? 'flat' : 'sharp'
       detuneAmount.innerHTML = Math.abs(detune)
     }
   }

@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { toggleLiveInput } from './pitch-detect'
 
 import './Tuner.scss'
 
 export default function Tuner() {
-  toggleLiveInput()
+  useEffect(() => {
+    toggleLiveInput()
+  })
 
   return (
     <div>

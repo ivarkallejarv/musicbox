@@ -1,18 +1,23 @@
 body {
-  font: 14pt 'Alike', sans-serif;
+  font: 16pt 'Alike', sans-serif;
 }
+
 #note {
   font-size: 164px;
 }
+
 .droptarget {
   background-color: #348781;
 }
-div.confident {
+
+.confident {
   color: black;
 }
-div.vague {
+
+.vague {
   color: lightgrey;
 }
+
 #note {
   display: inline-block;
   height: 180px;
@@ -27,19 +32,24 @@ div.vague {
   text-align: center;
   padding-top: 10px;
 }
+
 #output {
   width: 300px;
   height: 42px;
 }
+
 #flat {
   display: none;
 }
+
 #sharp {
   display: none;
 }
+
 .flat #flat {
   display: inline;
 }
+
 .sharp #sharp {
   display: inline;
 }
